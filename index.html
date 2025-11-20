@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal Login</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <!-- 🌍 Language Selector -->
+    <div class="lang-select">
+        <select id="language">
+            <option value="en">🇺🇸 English</option>
+            <option value="es">🇪🇸 Español</option>
+            <option value="fr">🇫🇷 Français</option>
+        </select>
+    </div>
+
+    <div class="container">
+        <div class="card">
+
+            <!-- 🏷 Titles with IDs for translation -->
+            <h2 id="title">Welcome Back</h2>
+            <p class="subtitle" id="subtitle">Please enter your details to login.</p>
+
+            <!-- Login Form -->
+            <form id="loginForm">
+
+                <div class="input-group">
+                    <label id="label-identifier" for="identifier">Username, Email, or Phone</label>
+                    <input type="text" id="identifier" placeholder="e.g. john@example.com" required>
+                </div>
+
+                <div class="input-group">
+                    <label id="label-password" for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                </div>
+
+                <div class="actions">
+                    <a id="forgot" href="/forgot-password.html">Forgot password?</a>
+                </div>
+
+                <button type="submit" id="loginBtn">Login</button>
+            </form>
+
+            <!-- Footer -->
+            <p class="footer-text">
+                <span id="no-account">Don't have an account?</span>
+                <a id="signupLink" href="/signup.html">Sign up</a>
+            </p>
+
+            <div id="error-msg" class="error hidden"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script src="lang.js"></script> <!-- Language script -->
+</body>
+</html>
