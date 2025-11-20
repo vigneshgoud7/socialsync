@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SocialSync — Home</title>
+  <link rel="stylesheet" href="main.css">
+
+  <!-- Smooth scroll + reveal animations -->
+  <style>
+    html { scroll-behavior: smooth; }
+
+    /* reveal effect */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* highlight effect */
+    .highlight {
+      animation: highlightGlow 2s ease;
+    }
+
+    @keyframes highlightGlow {
+      0% { box-shadow: 0 0 0px rgba(74,78,255,0); }
+      50% { box-shadow: 0 0 25px rgba(74,78,255,0.45); }
+      100% { box-shadow: 0 0 0px rgba(74,78,255,0); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAVBAR -->
+  <header class="site-header">
+    <nav class="navbar container">
+      <div class="brand">
+        <a href="home.html" class="brand-link">
+          <img src="logo.png" alt="SocialSync logo" class="logo-img" onerror="this.style.display='none'">
+          <span class="brand-text">SocialSync</span>
+        </a>
+      </div>
+
+      <ul class="nav-links">
+        <li><a href="#about" class="nav-link">About</a></li>
+        <li><a href="#contact" class="nav-link">Contact</a></li>
+        <li><a href="index.html" class="btn btn-signin">Sign In</a></li>
+      </ul>
+
+      <button class="mobile-toggle" aria-label="Open menu">☰</button>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <main>
+    <section class="hero">
+      <div class="hero-inner container">
+        <div class="hero-left">
+          <h1 class="hero-title">Connect. Share. Belong.</h1>
+          <p class="hero-sub">
+            SocialSync helps you discover what matters — friends, trends, and ideas.
+          </p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="signup.html">Get Started</a>
+            <a class="btn btn-ghost" href="#about">Learn More</a>
+          </div>
+        </div>
+
+        <div class="hero-right">
+          <div class="card-mock">
+            <div class="card-top">
+              <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+            </div>
+            <div class="card-body">
+              <h3>Featured: Welcome Post</h3>
+              <p>Start sharing your first moment — it's simple and fast.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUICK CARDS -->
+    <section class="quick-cards container">
+      <div class="card-grid">
+        <a href="#about" class="quick-card">
+          <div class="qc-icon">ℹ️</div>
+          <h4>About</h4>
+          <p>Learn what SocialSync is and why it exists.</p>
+        </a>
+
+        <a href="#contact" class="quick-card">
+          <div class="qc-icon">✉️</div>
+          <h4>Contact</h4>
+          <p>Have feedback or partnership ideas? Reach out.</p>
+        </a>
+
+        <a href="index.html" class="quick-card">
+          <div class="qc-icon">🔐</div>
+          <h4>Sign In</h4>
+          <p>Already a member? Sign in and go to your feed.</p>
+        </a>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <!-- ABOUT -->
+<section id="about" class="section about container reveal">
+
+  <h2>About SocialSync</h2>
+  <p>
+    SocialSync is a next-generation social platform built with modern tech,
+    real-time interactions, and a clean minimal UI. Our goal is to make
+    connecting online feel natural, meaningful, and beautifully simple.
+  </p>
+
+  <!-- Mission / Vision -->
+  <div class="features-grid">
+    <div class="feature">
+      <h4>🌍 Our Mission</h4>
+      <p>
+        To bring people closer through honest conversations, creativity,
+        and shared moments — without the noise and clutter.
+      </p>
+    </div>
+
+    <div class="feature">
+      <h4>🚀 Our Vision</h4>
+      <p>
+        A world where everyone has the freedom to express, share, and belong.
+        SocialSync evolves with you, not the other way around.
+      </p>
+    </div>
+
+    <div class="feature">
+      <h4>🛡️ Privacy First</h4>
+      <p>
+        Your data belongs to you. We design features with transparency and safety
+        at the core of every interaction.
+      </p>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid" style="margin-top:40px; display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:20px;">
+    <div class="stat-box" style="text-align:center; padding:20px; background:white; border-radius:12px; box-shadow:0 10px 30px rgba(12,18,42,0.05);">
+      <h3 style="font-size:34px; margin-bottom:6px; color:var(--primary)">1M+</h3>
+      <p style="color:var(--muted)">Daily Connections</p>
+    </div>
+
+    <div class="stat-box" style="text-align:center; padding:20px; background:white; border-radius:12px; box-shadow:0 10px 30px rgba(12,18,42,0.05);">
+      <h3 style="font-size:34px; margin-bottom:6px; color:var(--primary)">98%</h3>
+      <p style="color:var(--muted)">User Satisfaction</p>
+    </div>
+
+    <div class="stat-box" style="text-align:center; padding:20px; background:white; border-radius:12px; box-shadow:0 10px 30px rgba(12,18,42,0.05);">
+      <h3 style="font-size:34px; margin-bottom:6px; color:var(--primary)">50k+</h3>
+      <p style="color:var(--muted)">Creative Posts Shared Daily</p>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <h3 style="margin-top:50px; margin-bottom:10px;">Our Journey</h3>
+  <div class="timeline" style="border-left:3px solid var(--primary); padding-left:20px; margin-top:10px;">
+    <p><strong>2023 — Idea Born:</strong> We wanted a social platform without clutter.</p>
+    <p><strong>2024 — Prototype:</strong> Fast, modern, real-time feed engine created.</p>
+    <p><strong>2025 — SocialSync Launch:</strong> Our first public release with messaging, posting and privacy tools.</p>
+  </div>
+
+  <!-- Why SocialSync -->
+  <h3 style="margin-top:50px; margin-bottom:14px;">Why SocialSync?</h3>
+  <ul style="list-style: none; padding-left: 0; color:var(--muted); line-height:1.7;">
+    <li>✔ Clean and distraction-free feed</li>
+    <li>✔ Advanced privacy + safety controls</li>
+    <li>✔ AI-driven recommendations (optional)</li>
+    <li>✔ Fast and mobile-friendly UI</li>
+    <li>✔ Designed for real people, not algorithms</li>
+    <li>✔ Smart chat system with emojis & reactions</li>
+  </ul>
+
+  <!-- FAQ -->
+  <h3 style="margin-top:50px; margin-bottom:14px;">Frequently Asked Questions</h3>
+
+  <div class="faq-grid" style="display:grid; gap:20px; grid-template-columns: repeat(auto-fit, minmax(280px,1fr));">
+    <div class="feature">
+      <h4>Is SocialSync free?</h4>
+      <p>Yes — all core features are completely free for everyone.</p>
+    </div>
+    <div class="feature">
+      <h4>Can I delete my data?</h4>
+      <p>Absolutely. Full account deletion is available anytime.</p>
+    </div>
+    <div class="feature">
+      <h4>Is my data safe?</h4>
+      <p>All personal data is encrypted and never sold to third parties.</p>
+    </div>
+  </div>
+
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section contact container reveal">
+
+  <h2>Contact Us</h2>
+  <p>
+    Have questions, feedback, or partnership ideas?  
+    We’d love to hear from you.
+  </p>
+
+  <div style="
+      background:white;
+      border-radius:14px;
+      padding:20px;
+      box-shadow:0 12px 30px rgba(12,18,42,0.05);
+      margin-bottom:25px;
+    ">
+    <h3 style="margin-bottom:8px;">📧 Email Us</h3>
+    <p style="color:var(--muted); font-size:16px;">
+      You can reach our team anytime at:
+      <br>
+      <strong style="color:var(--primary); font-size:18px;">
+        socialsync@team.com
+      </strong>
+    </p>
+  </div>
+
+  <form class="contact-form" action="#" method="POST"
+        onsubmit="alert('This contact form is a demo. Connect backend to make it work.'); return false;">
+    <div class="row">
+      <input type="text" name="name" placeholder="Your name" required>
+      <input type="email" name="email" placeholder="Your email" required>
+    </div>
+    <textarea name="message" rows="5" placeholder="Your message" required></textarea>
+
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">Send Message</button>
+    </div>
+  </form>
+
+</section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer">
+    <div class="container">
+      <small>© <span id="year"></span> SocialSync — Built with ❤️</small>
+      <nav class="footer-links">
+        <a href="home.html">Home</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    const toggle = document.querySelector('.mobile-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    if (toggle) {
+      toggle.addEventListener('click', () => navLinks.classList.toggle('open'));
+    }
+
+    /* Reveal Animation */
+    function revealOnScroll() {
+      const elements = document.querySelectorAll(".reveal");
+      elements.forEach(el => {
+        if (el.getBoundingClientRect().top < window.innerHeight - 80) {
+          el.classList.add("active");
+        }
+      });
+    }
+    window.addEventListener("scroll", revealOnScroll);
+    revealOnScroll();
+
+    /* Highlight About section when clicked */
+    document.querySelectorAll('a[href="#about"]').forEach(link => {
+      link.addEventListener("click", () => {
+        const aboutSection = document.getElementById("about");
+        setTimeout(() => {
+          aboutSection.classList.add("highlight");
+          setTimeout(() => aboutSection.classList.remove("highlight"), 2000);
+        }, 600);
+      });
+    });
+  </script>
+
+</body>
+</html>

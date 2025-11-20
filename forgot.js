@@ -18,11 +18,11 @@ document.getElementById("forgotForm").addEventListener("submit", async (e) => {
         const response = await fetch("http://127.0.0.1:8000/forgot-password", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email })  // ✅ SUPER IMPORTANT!
+            body: JSON.stringify({ email })
         });
 
         let data = {};
-        try { data = await response.json(); } catch {}
+        try { data = await response.json(); } catch { }
 
         if (!response.ok) {
             errorMsg.textContent = data.detail || "Error sending OTP";
@@ -30,14 +30,14 @@ document.getElementById("forgotForm").addEventListener("submit", async (e) => {
             return;
         }
 
-        successMsg.textContent = "OTP sent to your email!";
+        successMsg.textContent = "OTP sent! Redirecting...";
         successMsg.classList.remove("hidden");
 
         setTimeout(() => {
-            window.location.href = "verify.html?email=" + email;
+            window.location.href = "verify.html?email=" + encodeURIComponent(email);
         }, 1500);
 
-    } catch (err) {
+    } catch {
         errorMsg.textContent = "Server error";
         errorMsg.classList.remove("hidden");
     }
