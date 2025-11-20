@@ -26,8 +26,15 @@ SECRET_KEY = "YOUR_SUPER_SECRET_KEY"  # change this in production
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
-# Correct MongoDB URI (password encoded with %40)
-MONGO_URI = "mongodb+srv://vignesh:Vignesh%4006@social-sync-db.qew1uju.mongodb.net/?appName=social-sync-db"
+from dotenv import load_dotenv
+import os
+
+load_dotenv()  # load .env file
+
+MONGO_URI = os.getenv("MONGO_URI")
+
+print("Mongo URI loaded:", MONGO_URI)
+
 
 client = AsyncIOMotorClient(MONGO_URI)
 db = client["social_sync"]  # database name
