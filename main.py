@@ -80,8 +80,9 @@ def create_access_token(data: dict):
 async def signup(data: SignupRequest):
 
     existing = await db.users.find_one({"identifier": data.identifier})
+    
     if existing:
-        raise HTTPException(status_code=400, detail="User already exists")
+        raise HTTPException(status_code=400, detail="You already have an account.Please login in")
 
     hashed = hash_password(data.password)
 
@@ -102,20 +103,17 @@ async def signup(data: SignupRequest):
 @app.post("/login", response_model=Token)
 async def login(data: LoginRequest):
 
-    user = await db.users.find_one({
-        "$or": [
-            {"identifier": data.identifier},
-            {"email": data.identifier},
-            {"phone": data.identifier}
-        ]
-    })
+    # Check if user exists
+    user = await db.users.find_one({"identifier": data.identifier})
 
     if not user:
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        raise HTTPException(status_code=404, detail="Account does not exist")
 
+    # Check correct password
     if not verify_password(data.password, user["password"]):
-        raise HTTPException(status_code=400, detail="Incorrect username or password")
+        raise HTTPException(status_code=401, detail="Incorrect password")
 
+    # Create token
     token = create_access_token({"sub": user["identifier"]})
 
     return {"access_token": token, "token_type": "bearer"}

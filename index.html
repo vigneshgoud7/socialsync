@@ -9,34 +9,48 @@
 
 <body>
 
+<div class="lang-select">
+    <select id="language">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="fr">Français</option>
+    </select>
+</div>
+
 <div class="blob"></div>
 
 <div class="container">
     <div class="card">
 
-        <h2>Welcome Back</h2>
-        <p class="subtitle">Please enter your details to login.</p>
+        <h2 id="title">Welcome Back</h2>
+        <p class="subtitle" id="subtitle">Please enter your details to login.</p>
 
-        <form>
+        <form id="loginForm">
+
             <div class="input-group">
-                <label>Username / Email</label>
-                <input type="text" required>
+                <label id="label-identifier">Username, Email, or Phone</label>
+                <input type="text" id="identifier" required>
             </div>
 
             <div class="input-group">
-                <label>Password</label>
-                <input type="password" required>
+                <label id="label-password">Password</label>
+                <input type="password" id="password" required>
             </div>
 
-            <button class="btn-primary">Login</button>
+            <p id="error-msg" class="hidden" style="color:red; text-align:center;"></p>
+
+            <button class="btn-primary" id="loginBtn">Login</button>
         </form>
 
-        <p class="footer-text">
-            Don't have an account? <a href="signup.html">Sign up</a>
+        <p class="footer-text" id="no-account">
+            Don't have an account? <a id="signupLink" href="signup.html">Sign up</a>
         </p>
 
     </div>
 </div>
+
+<script src="lang.js"></script>
+<script src="app.js"></script>
 
 </body>
 </html>

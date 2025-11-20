@@ -6,25 +6,24 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     const errorMsg = document.getElementById('error-msg');
 
     try {
-        // 1. Send request to FastAPI
-        const response = await fetch('http://localhost:8000/login', {
+        const response = await fetch('http://127.0.0.1:8000/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ identifier: identifier, password: password })
+            body: JSON.stringify({ identifier, password })
         });
 
         const data = await response.json();
 
         if (response.ok) {
-            // 2. Store JWT in LocalStorage (as per flow requirement)
             localStorage.setItem('token', data.access_token);
-            
-            // 3. Redirect to Feed
-            window.location.href = '/feed.html'; 
-        } else {
+            window.location.href = 'feed.html';
+        }
+        if (!response.ok) {
             errorMsg.textContent = data.detail || "Login failed";
             errorMsg.classList.remove('hidden');
+            return;
         }
+
     } catch (error) {
         console.error("Error:", error);
         errorMsg.textContent = "Server error. Please try again.";

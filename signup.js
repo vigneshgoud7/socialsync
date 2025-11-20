@@ -15,7 +15,7 @@ document.getElementById("signupForm").addEventListener("submit", async function 
         const data = await response.json();
 
         if (!response.ok) {
-            errorMsg.textContent = data.detail || "Signup failed";
+            errorMsg.textContent = data.detail || "You already have an account";
             errorMsg.classList.remove("hidden");
             return;
         }
