@@ -1,58 +1,183 @@
-:root {
-    --primary: #0066CC;
-    --bg: #E6F0FA;
-    --text: #333333;
-    --white: #ffffff;
-}
-
+/* ===========================
+   🌈 Live Moving Blob Background
+   =========================== */
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: var(--bg);
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    height: 100vh;
+    overflow: hidden;
+
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
-    margin: 0;
+
+    background: #050505;   /* True black background */
 }
 
-.container { width: 100%; max-width: 400px; padding: 20px; }
+/* The live animated blob */
+.blob {
+    position: fixed;
+    width: 650px;
+    height: 650px;
+
+    background: radial-gradient(circle at center, #00eaff 0%, #005bff 100%);
+    filter: blur(180px);
+    opacity: 0.8;
+
+    animation: moveBlob 12s infinite alternate ease-in-out;
+}
+
+@keyframes moveBlob {
+    0%   { transform: translate(-250px, -200px) scale(1); }
+    50%  { transform: translate(200px, -50px) scale(1.25); }
+    100% { transform: translate(-120px, 250px) scale(1.1); }
+}
+
+/* ===========================
+   Login / Signup Card
+   =========================== */
+.container {
+    z-index: 10;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 
 .card {
-    background: var(--white);
+    background: rgba(42, 45, 53, 0.92);   /* SOFT BLUE-GREY CARD */
+    backdrop-filter: blur(18px);
     padding: 40px;
+    width: 360px;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-    text-align: center;
+
+    border: 1px solid rgba(0, 234, 255, 0.35);
+    box-shadow: 0 0 25px rgba(0, 234, 255, 0.25);
+
+    animation: glowPulse 4s infinite alternate;
+}
+
+
+@keyframes glowPulse {
+    0% { box-shadow: 0 0 15px rgba(0, 234, 255, 0.2); }
+    100% { box-shadow: 0 0 35px rgba(0, 234, 255, 0.5); }
+}
+
+/* ===========================
+   Titles
+   =========================== */
+h2 {
+    font-size: 30px;
+    font-weight: 700;
+    color: #00eaff;   /* Neon cyan */
+    margin-top: 0;
+}
+
+.subtitle {
+    color: #b3eeff;   /* Soft light cyan */
+    font-size: 14px;
+}
+
+/* ===========================
+   Input Fields
+   =========================== */
+.input-group {
+    margin-bottom: 18px;
+}
+
+label {
+    font-size: 14px;
+    color: #d7faff;
+    font-weight: 600;
 }
 
 input {
     width: 100%;
-    padding: 15px;
-    margin-top: 8px;
-    margin-bottom: 20px;
-    border: 2px solid #ddd;
-    border-radius: 12px;
-    font-size: 16px;
-    box-sizing: border-box; /* Fixes padding issues */
-}
+    padding: 10px 12px;
+    margin-top: 5px;
 
-input:focus { border-color: var(--primary); outline: none; }
-
-button {
-    width: 100%;
-    padding: 15px;
-    background-color: var(--primary);
-    color: white;
     border: none;
-    border-radius: 12px;
-    font-size: 18px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.3s;
+    border-radius: 10px;
+
+    font-size: 14px;
+    color: #fff;
+
+    background: rgba(255, 255, 255, 0.12);
+
+    outline: none;
+    transition: box-shadow 0.3s ease, background 0.3s ease;
 }
 
-button:hover { background-color: #0052a3; }
+input:hover,
+input:focus {
+    box-shadow: 0 0 12px rgba(0, 234, 255, 0.7);
+    background: rgba(255, 255, 255, 0.18);
+}
 
-.lang-select { position: absolute; top: 20px; right: 20px; }
-.error { color: #DC3545; margin-top: 10px; }
-.hidden { display: none; }
+/* ===========================
+   Buttons (Login + Signup)
+   =========================== */
+.btn-primary {
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+
+    font-size: 17px;
+    font-weight: bold;
+
+    background: linear-gradient(120deg, #00eaff, #0066ff);
+    background-size: 200%;
+    color: #000;
+
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background-position 0.4s ease;
+}
+
+/* Animation happens ONLY ON HOVER */
+.btn-primary:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 20px rgba(0, 234, 255, 0.9);
+
+    animation: buttonGlow 2.5s ease infinite;
+}
+
+@keyframes buttonGlow {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+/* ===========================
+   Footer links
+   =========================== */
+.footer-text {
+    margin-top: 15px;
+    text-align: center;
+    color: #d7faff;
+}
+
+.footer-text a {
+    color: #00eaff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* ===========================
+   Language Selector
+   =========================== */
+.lang-select {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 20;
+}
+
+select {
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    font-weight: bold;
+    background: rgba(255,255,255,0.9);
+}
