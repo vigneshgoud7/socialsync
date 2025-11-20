@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Verify OTP</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="blob"></div>
+
+<div class="container">
+    <div class="card">
+
+        <h2>Verify OTP</h2>
+        <p class="subtitle">Enter the OTP sent to your email</p>
+
+        <form id="verifyForm">
+
+            <div class="input-group">
+                <label>OTP</label>
+                <input type="number" id="otp" required>
+            </div>
+
+            <p id="v-error" class="hidden" style="color:red;text-align:center;"></p>
+            <p id="v-success" class="hidden" style="color:#00ff9d;text-align:center;"></p>
+
+            <button class="btn-primary">Verify OTP</button>
+
+        </form>
+
+    </div>
+</div>
+
+<script src="verify.js"></script>
+</body>
+</html>

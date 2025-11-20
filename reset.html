@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reset Password</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="blob"></div>
+
+<div class="container">
+    <div class="card">
+
+        <h2>Reset Password</h2>
+
+        <form id="resetForm">
+            <div class="input-group">
+                <label>New Password</label>
+                <input type="password" id="newPassword" required>
+            </div>
+
+            <!-- 🔥 THESE TWO LINES FIX YOUR ERROR -->
+            <p id="r-error" class="hidden" style="color:red;text-align:center;"></p>
+            <p id="r-success" class="hidden" style="color:#00ff9d;text-align:center;"></p>
+
+            <button class="btn-primary">Update Password</button>
+        </form>
+
+    </div>
+</div>
+
+<script src="reset.js"></script>
+</body>
+</html>

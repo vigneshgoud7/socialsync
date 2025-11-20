@@ -181,3 +181,20 @@ select {
     font-weight: bold;
     background: rgba(255,255,255,0.9);
 }
+
+.forgot-link {
+    text-align: right;
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+
+.forgot-link a {
+    color: #00eaff;
+    font-size: 13px;
+    text-decoration: none;
+}
+
+.forgot-link a:hover {
+    text-decoration: underline;
+    color: #66f2ff;
+}

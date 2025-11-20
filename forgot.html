@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Forgot Password</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="blob"></div>
+
+<div class="container">
+    <div class="card">
+
+        <h2>Reset Password</h2>
+        <p class="subtitle">Enter your username or email</p>
+
+        <form id="forgotForm">
+
+            <div class="input-group">
+                <label>Email</label>
+                <input type="email" id="fpEmail" required>
+            </div>
+
+            <p id="fp-error" class="hidden" style="color: red; text-align: center;"></p>
+            <p id="fp-success" class="hidden" style="color: #00ff9d; text-align: center;"></p>
+
+            <button class="btn-primary">Next</button>
+
+        </form>
+
+    </div>
+</div>
+
+<script src="forgot.js"></script>
+</body>
+</html>
