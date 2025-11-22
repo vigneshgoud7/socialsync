@@ -16,7 +16,7 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
 
         if (response.ok) {
             localStorage.setItem('token', data.access_token);
-            window.location.href = 'feed.html';
+            window.location.href = 'feed2.html';
         }
         if (!response.ok) {
             errorMsg.textContent = data.detail || "Login failed";

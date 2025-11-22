@@ -1,0 +1,232 @@
+/* ========== Theme variables — change these to match your logo colors ========= */
+:root{
+  --primary: #4a4eff;
+  --accent: #7f8bff;
+  --bg-1: #f6f8ff;
+  --text: #0f1724;
+  --muted: #6b7280;
+  --container-max: 1100px;
+}
+
+/* Basic reset */
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color:var(--text);
+  /* richer layered background */
+  background:
+    radial-gradient(1000px 500px at 10% 10%, rgba(122,137,255,0.06), transparent),
+    radial-gradient(800px 400px at 90% 90%, rgba(127,139,255,0.04), transparent),
+    linear-gradient(180deg,var(--bg-1), #ffffff 65%);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.6;
+  min-height:100vh;
+}
+
+/* container helper */
+.container{
+  width:90%;
+  max-width:var(--container-max);
+  margin:0 auto;
+}
+
+/* Header / Navbar */
+.site-header{
+  position:sticky;
+  top:0;
+  z-index:40;
+  backdrop-filter: blur(6px);
+  background: linear-gradient(to bottom, rgba(255,255,255,0.9), rgba(255,255,255,0.75));
+  box-shadow: 0 2px 12px rgba(10,18,40,0.04);
+}
+
+.navbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:14px 0;
+}
+
+/* Brand */
+.brand-link{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  text-decoration:none;
+  color:var(--text);
+}
+.logo-img{
+  width:56px;
+  height:56px;
+  object-fit:contain;
+  border-radius:12px;
+  /* force a light backdrop so dark logos show up */
+  background: #ffffff;
+  padding:8px;
+  box-shadow: 0 8px 26px rgba(74,78,255,0.12);
+  border: 1px solid rgba(15,23,42,0.04);
+}
+.brand-text{font-weight:800;font-size:18px;letter-spacing:0.2px}
+
+/* Nav Links */
+.nav-links{
+  list-style:none;
+  display:flex;
+  gap:18px;
+  align-items:center;
+}
+.nav-links a{ text-decoration:none; color:var(--muted); font-weight:700; padding:8px 10px; border-radius:10px;}
+.nav-links a:hover{ color:var(--text); background: rgba(74,78,255,0.05) }
+
+/* Sign in button style */
+.btn{
+  display:inline-block;
+  text-decoration:none;
+  border-radius:12px;
+  padding:10px 16px;
+  font-weight:700;
+  transition: all .18s ease;
+}
+.btn-primary{
+  background:linear-gradient(90deg,var(--primary),var(--accent));
+  color:white;
+  box-shadow: 0 12px 28px rgba(74,78,255,0.12);
+}
+.btn-ghost{
+  background:transparent;
+  color:var(--primary);
+  border:1px solid rgba(74,78,255,0.08);
+}
+
+/* Mobile toggle */
+.mobile-toggle{
+  display:none;
+  background:none;border:0;font-size:20px;
+}
+
+/* HERO */
+.hero{
+  padding:96px 0 40px;
+  min-height:56vh;
+  display:flex;
+  align-items:center;
+}
+.hero-inner{
+  display:grid;
+  grid-template-columns: 1fr 420px;
+  gap:28px;
+  align-items:center;
+}
+
+/* Left */
+.hero-title{
+  font-size:52px;
+  margin-bottom:16px;
+  color:var(--text);
+  line-height:1.03;
+  letter-spacing:-0.5px;
+}
+.hero-sub{
+  color:var(--muted);
+  font-size:18px;
+  margin-bottom:22px;
+}
+
+/* Right - decorative card */
+.card-mock{
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.82));
+  border-radius:18px;
+  padding:22px;
+  width:100%;
+  box-shadow: 0 20px 60px rgba(12,18,42,0.06);
+  border:1px solid rgba(15,23,42,0.03);
+}
+.card-top{ display:flex; gap:8px; margin-bottom:12px }
+.card-top .dot{ width:12px;height:12px;border-radius:50%;background:linear-gradient(90deg,var(--primary),var(--accent)) }
+.card-body h3{ margin-bottom:8px; font-size:16px }
+.card-body p{ margin:0; color:var(--muted); font-size:14px }
+
+/* QUICK CARDS (About / Contact / Sign In) */
+.quick-cards{ padding:28px 0 12px; }
+.card-grid{
+  display:grid;
+  gap:18px;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top:18px;
+}
+.quick-card{
+  display:block;
+  text-decoration:none;
+  background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(250,250,255,0.9));
+  border-radius:14px;
+  padding:18px;
+  box-shadow: 0 18px 40px rgba(12,18,42,0.04);
+  border:1px solid rgba(15,23,42,0.03);
+  color:var(--text);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.quick-card:hover{ transform: translateY(-6px); box-shadow: 0 28px 60px rgba(12,18,42,0.08) }
+.qc-icon{ font-size:22px; margin-bottom:8px; display:inline-block; background: linear-gradient(90deg,var(--primary),var(--accent)); color:white; padding:8px 10px; border-radius:10px; }
+
+/* Sections */
+.section{ padding:64px 0; }
+.about h2, .contact h2{ font-size:28px; margin-bottom:12px }
+.about p, .contact p{ color:var(--muted); margin-bottom:18px; max-width:75ch }
+
+/* features */
+.features-grid{
+  display:grid;
+  gap:18px;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  margin-top:18px;
+}
+.feature{
+  background: white;
+  border-radius:12px;
+  padding:18px;
+  box-shadow: 0 12px 30px rgba(12,18,42,0.04);
+}
+.feature h4{ margin-bottom:8px }
+
+/* contact form */
+.contact-form{ margin-top:14px; max-width:720px; }
+.contact-form .row{ display:flex; gap:12px; margin-bottom:12px; flex-wrap:wrap }
+.contact-form input, .contact-form textarea {
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:1px solid rgba(15,23,42,0.06);
+  background:rgba(250,250,255,0.95);
+  font-size:14px;
+}
+.form-actions{ margin-top:8px }
+
+/* Footer */
+.site-footer{
+  padding:18px 0;
+  border-top:1px solid rgba(15,23,42,0.03);
+  background:transparent;
+}
+.site-footer .container{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap }
+.footer-links a{ margin-left:12px; color:var(--muted); text-decoration:none }
+
+/* Responsive */
+@media (max-width:980px){
+  .hero-inner{ grid-template-columns: 1fr; }
+  .card-grid{ grid-template-columns: repeat(2, 1fr); }
+  .nav-links{ display:none; position:absolute; right:18px; top:68px; background:white; padding:12px; border-radius:10px; box-shadow: 0 12px 38px rgba(12,18,60,0.08) }
+  .nav-links.open{ display:flex; flex-direction:column; min-width:160px }
+  .mobile-toggle{ display:block }
+  .logo-img{ width:48px;height:48px }
+}
+
+@media (max-width:520px){
+  .card-grid{ grid-template-columns: 1fr }
+  .hero-title{ font-size:28px }
+  .brand-text{ display:none }
+}
+
+
