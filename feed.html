@@ -1,11 +1,283 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SocialSync — Feed (Neon)</title>
+  <style>
+    :root{
+      --bg:#050505;
+      --card:rgba(42,45,53,0.92);
+      --neon1:#00eaff;
+      --neon2:#7b5cff;
+      --muted:#9aa4b2;
+      --sidebar-collapsed:72px;
+      --sidebar-expanded:220px;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;background:var(--bg);font-family:Inter,system-ui,Segoe UI,Roboto,Arial;color:#e6f7ff}
+
+    /* live blob (keeps visual continuity with your auth pages) */
+    .blob{position:fixed;inset:auto;left:40px;top:20px;width:650px;height:650px;background:radial-gradient(circle at center,var(--neon1) 0%,#005bff 100%);filter:blur(160px);opacity:0.7;z-index:0}
+
+    /* app layout */
+    .app{position:relative;z-index:5;display:flex;gap:24px;height:100vh;padding:32px;align-items:flex-start}
+
+    /* Sidebar */
+    .sidebar{width:var(--sidebar-collapsed);min-width:var(--sidebar-collapsed);height:calc(100% - 64px);background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));border-radius:16px;padding:18px;display:flex;flex-direction:column;align-items:center;transition:width .28s ease,box-shadow .28s ease;backdrop-filter:blur(10px);border:1px solid rgba(0,234,255,0.06)}
+
+    /* Expand on hover */
+    .sidebar:hover{width:var(--sidebar-expanded);align-items:flex-start;padding-left:20px;box-shadow:0 10px 40px rgba(0,0,0,0.6)}
+
+    .brand{display:flex;align-items:center;gap:12px;margin-bottom:18px;opacity:0;transform:translateX(-6px);transition:opacity .28s,transform .28s}
+    .sidebar:hover .brand{opacity:1;transform:none}
+    .brand .logo{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--neon1),var(--neon2));display:flex;align-items:center;justify-content:center;color:#042; font-weight:700}
+    .brand .title{font-weight:700;color:var(--neon1);font-size:16px}
+
+    .nav{list-style:none;margin:0;padding:0;width:100%}
+    .nav li{display:flex;align-items:center;gap:12px;width:100%;padding:12px;border-radius:12px;color:var(--muted);cursor:pointer;transition:background .18s,color .18s;white-space:nowrap;overflow:hidden}
+    .nav li .icon{width:36px;height:36;border-radius:10px;display:inline-grid;place-items:center;background:transparent;color:var(--neon1);font-size:18px}
+    .nav li:hover{background:linear-gradient(90deg, rgba(0,234,255,0.06), rgba(123,92,255,0.04));color:#e6f7ff}
+    .sidebar:hover .nav li span.label{opacity:1;transform:none}
+
+    /* labels appear only on expanded */
+    .nav li span.label{opacity:0;transform:translateX(-6px);transition:opacity .18s,transform .18s}
+
+    .logout{margin-top:auto;width:100%}
+
+    /* main content adjusts automatically because of flex */
+    .main{flex:1;max-height:100%;overflow:auto;padding-right:12px}
+    .container-card{max-width:980px;margin:0 auto}
+
+    /* create post card */
+    .create-card{background:var(--card);padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03);margin-bottom:22px}
+    .create-card textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid rgba(255,255,255,0.04);padding:12px;background:rgba(255,255,255,0.02);color:#e6f7ff;resize:vertical}
+    .create-actions{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+    .btn{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:8px 12px;border-radius:10px;color:var(--neon1);cursor:pointer}
+    .btn.ghost{background:transparent}
+
+    /* posts */
+    .post{background:var(--card);margin-top:18px;padding:18px;border-radius:14px;border:1px solid rgba(255,255,255,0.03)}
+    .post .meta{display:flex;align-items:center;gap:12px}
+    .avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--neon1),var(--neon2));display:grid;place-items:center;color:#041;font-weight:700}
+    .meta .name{font-weight:700;color:#e6f7ff}
+    .meta .time{color:var(--muted);font-size:13px}
+
+    /* three-dot menu */
+    .three-dot{margin-left:auto;position:relative}
+    .three-dot button{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:18px;padding:6px;border-radius:8px}
+    .dropdown{position:absolute;right:0;top:36px;min-width:180px;background:#fff;border-radius:10px;box-shadow:0 8px 30px rgba(2,6,23,0.45);color:#0b1220;padding:8px;display:none;z-index:40}
+    .three-dot.open .dropdown{display:block}
+    .dropdown button{display:flex;gap:8px;align-items:center;width:100%;border:none;background:transparent;padding:10px;border-radius:8px;cursor:pointer;color:#0b1220}
+    .dropdown button:hover{background:rgba(0,0,0,0.04)}
+
+    /* media area — ready for image/video carousel */
+    .media{margin-top:12px;border-radius:12px;overflow:hidden;position:relative;background:linear-gradient(135deg,var(--neon1),var(--neon2));min-height:260px}
+    .media-track{display:flex;transition:transform .36s cubic-bezier(.2,.9,.3,1);height:100%}
+    .media-slide{min-width:100%;height:100%;display:flex;align-items:center;justify-content:center}
+    .media-slide img, .media-slide video{width:100%;height:100%;object-fit:cover;display:block}
+
+    /* small dot nav */
+    .dots{position:absolute;left:50%;transform:translateX(-50%);bottom:12px;display:flex;gap:8px}
+    .dots button{width:34px;height:6px;border-radius:6px;border:none;background:rgba(255,255,255,0.4);opacity:.7}
+    .dots button.active{background:#fff;width:34px;box-shadow:0 6px 18px rgba(0,0,0,0.3)}
+
+    /* audio controls overlay */
+    .audio-controls{position:absolute;left:12px;bottom:10px;background:rgba(0,0,0,0.45);padding:8px;border-radius:10px;display:flex;gap:8px;align-items:center}
+    .audio-controls button{background:transparent;border:none;color:#fff;cursor:pointer}
+
+    /* caption */
+    .caption{margin-top:12px;color:#dbeeff}
+
+    /* responsiveness */
+    @media (max-width:900px){
+      .app{padding:18px}
+      .sidebar{display:none}
+    }
+
+  </style>
 </head>
 <body>
-    <p>Logged in</p>
+  <div class="blob" aria-hidden="true"></div>
+  <div class="app" id="app">
+    <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+      <div class="brand">
+        <div class="logo">SS</div>
+        <div class="title">SocialSync</div>
+      </div>
+
+      <ul class="nav" role="menu">
+        <li role="menuitem"><span class="icon">🏠</span><span class="label">Home</span></li>
+        <li role="menuitem"><span class="icon">👤</span><span class="label">Profile</span></li>
+        <li role="menuitem"><span class="icon">✍️</span><span class="label">Create Post</span></li>
+        <li role="menuitem"><span class="icon">💬</span><span class="label">Messages</span></li>
+        <li role="menuitem"><span class="icon">🔔</span><span class="label">Notifications</span></li>
+        <li class="logout"><button class="btn" id="logoutBtn">Log Out</button></li>
+      </ul>
+    </aside>
+
+    <main class="main" id="main">
+      <div class="container-card">
+        <div class="create-card">
+          <div style="color:var(--muted);margin-bottom:10px">@username • vibing</div>
+          <div style="font-size:18px;margin-bottom:8px">What's on your mind?</div>
+          <textarea placeholder="Share something interesting..."></textarea>
+        </div>
+
+        <!-- example post -->
+        <article class="post" data-id="post-1">
+          <div class="meta">
+            <div class="avatar">AR</div>
+            <div>
+              <div class="name">Alex Rivera</div>
+              <div class="time">2 hours ago</div>
+            </div>
+            <div class="three-dot" id="postMenu1">
+              <button aria-haspopup="true" aria-expanded="false" class="three-btn">⋯</button>
+              <div class="dropdown" role="menu">
+                <button role="menuitem">⤴️ Repost</button>
+                <button role="menuitem">💡 Not Interested</button>
+                <button role="menuitem">⭐ Add to Favourites</button>
+                <button role="menuitem">📤 Share Options</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- media carousel -->
+          <div class="media" tabindex="0" data-media='["/mnt/data/296c868b-b343-45b5-a675-ee4e78aab732.png","/mnt/data/296c868b-b343-45b5-a675-ee4e78aab732.png"]'>
+            <div class="media-track">
+              <!-- slides will be injected by JS -->
+            </div>
+
+            <!-- audio overlay controls (hidden if no audio) -->
+            <div class="audio-controls" style="display:none">
+              <button id="audioPlay">▶</button>
+              <button id="audioMute">🔈</button>
+              <div class="audio-label" style="color:#fff;font-size:13px;margin-left:6px">Background Track</div>
+            </div>
+
+            <div class="dots" aria-hidden="true" ></div>
+          </div>
+
+          <div class="caption">Just finished reading an amazing book on design principles... Anyone else diving into UX/UI lately?</div>
+        </article>
+
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // ---------- Sidebar hover (adds expanded class for JS-accessible state) ----------
+    const sidebar = document.getElementById('sidebar');
+    sidebar.addEventListener('mouseenter', ()=> sidebar.classList.add('expanded'));
+    sidebar.addEventListener('mouseleave', ()=> sidebar.classList.remove('expanded'));
+
+    // ---------- three-dot dropdown ----------
+    document.querySelectorAll('.three-dot').forEach(wrapper => {
+      const btn = wrapper.querySelector('.three-btn');
+      const drop = wrapper.querySelector('.dropdown');
+      btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        // close other dropdowns
+        document.querySelectorAll('.three-dot.open').forEach(n=>{ if(n!==wrapper) n.classList.remove('open'); });
+        wrapper.classList.toggle('open');
+        btn.setAttribute('aria-expanded', wrapper.classList.contains('open'));
+      });
+    });
+    // close dropdown on outside click
+    document.addEventListener('click', ()=> document.querySelectorAll('.three-dot.open').forEach(n=>n.classList.remove('open')));
+
+    // ---------- Media carousel logic ----------
+    class Carousel{
+      constructor(root){
+        this.root = root;
+        this.track = root.querySelector('.media-track');
+        this.dotsWrap = root.querySelector('.dots');
+        this.slides = [];
+        this.index = 0;
+        this.audioEl = null; // optional audio element
+
+        const mediaData = JSON.parse(root.getAttribute('data-media') || '[]');
+        mediaData.forEach(src => this.addSlide(src));
+        this.render();
+        this.addListeners();
+      }
+      addSlide(src){
+        const slide = document.createElement('div');
+        slide.className = 'media-slide';
+        if(/\.(mp4|webm|ogg)$/i.test(src)){
+          const v = document.createElement('video'); v.src = src; v.controls = true; v.setAttribute('preload','metadata');
+          slide.appendChild(v);
+        } else if(/\.(mp3|wav|m4a)$/i.test(src)){
+          // audio-only: show a poster area and create audio control
+          const placeholder = document.createElement('div'); placeholder.style.width='100%'; placeholder.style.height='260px'; placeholder.style.display='grid'; placeholder.style.placeItems='center'; placeholder.innerText='Audio track';
+          slide.appendChild(placeholder);
+          // create audio element separately
+          if(!this.audioEl){ this.audioEl = document.createElement('audio'); this.audioEl.src = src; this.audioEl.preload='auto'; }
+        } else {
+          const img = document.createElement('img'); img.src = src; img.alt = 'post media';
+          slide.appendChild(img);
+        }
+        this.slides.push(slide);
+      }
+      render(){
+        this.track.innerHTML=''; this.dotsWrap.innerHTML='';
+        this.slides.forEach((s,i)=>{ this.track.appendChild(s); const d=document.createElement('button'); d.className='dot-btn'; d.dataset.index=i; d.addEventListener('click', ()=>this.go(i)); this.dotsWrap.appendChild(d); });
+        this.update();
+      }
+      update(){
+        const w = this.root.clientWidth;
+        this.track.style.transform = `translateX(${ -this.index * w }px)`;
+        Array.from(this.dotsWrap.children).forEach((b,i)=> b.classList.toggle('active', i===this.index));
+      }
+      go(i){ this.index = Math.max(0, Math.min(i, this.slides.length-1)); this.update(); }
+      next(){ this.go(this.index+1); }
+      prev(){ this.go(this.index-1); }
+      addListeners(){
+        window.addEventListener('resize', ()=> this.update());
+        // keyboard support when media has focus
+        this.root.addEventListener('keydown', (e)=>{
+          if(e.key==='ArrowRight') this.next();
+          if(e.key==='ArrowLeft') this.prev();
+          if(e.key===' '){ // space => toggle audio/video play on focused slide
+            const focused = this.track.children[this.index];
+            const vid = focused.querySelector('video');
+            if(vid){ vid.paused ? vid.play() : vid.pause(); }
+            if(this.audioEl){ this.audioEl.paused ? this.audioEl.play() : this.audioEl.pause(); }
+            e.preventDefault();
+          }
+        });
+
+        // simple swipe support (pointer events)
+        let startX=null, moved=false;
+        this.track.addEventListener('pointerdown', (e)=>{ startX = e.clientX; moved=false; this.track.setPointerCapture(e.pointerId); });
+        this.track.addEventListener('pointermove', (e)=>{ if(startX===null) return; const dx = e.clientX - startX; if(Math.abs(dx)>30) moved=true; });
+        this.track.addEventListener('pointerup', (e)=>{ if(startX===null) return; const dx = e.clientX - startX; if(moved){ if(dx<0) this.next(); else this.prev(); } startX=null; moved=false; });
+
+        // dots keyboard focus style
+        Array.from(this.dotsWrap.children).forEach(d=>d.addEventListener('keydown', (e)=>{ if(e.key==='ArrowRight') this.next(); if(e.key==='ArrowLeft') this.prev(); }));
+
+        // show audio controls if audio element exists
+        if(this.audioEl){
+          const controls = this.root.querySelector('.audio-controls');
+          controls.style.display='flex';
+          // wire up play/mute
+          const playBtn = controls.querySelector('#audioPlay');
+          const muteBtn = controls.querySelector('#audioMute');
+          playBtn.addEventListener('click', ()=> this.audioEl.paused ? this.audioEl.play() : this.audioEl.pause());
+          muteBtn.addEventListener('click', ()=> this.audioEl.muted = !this.audioEl.muted);
+        }
+      }
+    }
+
+    // init carousels
+    document.querySelectorAll('.media').forEach(m => new Carousel(m));
+
+    // make sure each media container gets focusable controls for keyboard navigation
+    document.querySelectorAll('.media').forEach(m=>{ m.addEventListener('focus', ()=> m.classList.add('focused')); m.addEventListener('blur', ()=> m.classList.remove('focused')); });
+
+    // Example: if backend pushes array of urls into data-media attribute you are ready.
+
+  </script>
 </body>
 </html>
