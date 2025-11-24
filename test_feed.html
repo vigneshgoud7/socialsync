@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Social Sync — Feed</title>
+  <link rel="stylesheet" href="test_feed.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- SIDEBAR (logout removed here on purpose) -->
+    <aside id="sidebar" class="sidebar collapsed" tabindex="0" aria-label="Primary">
+      <div class="brand">
+        <!-- Use your uploaded logo file (local path in your environment). -->
+        <img src="logo.png" alt="Social Sync" class="logo" />
+      </div>
+
+      <nav class="nav" role="navigation" aria-label="Main">
+        <button class="nav-btn active" data-target="home">
+          <img src="home.jpeg" alt="home" class="icon" />
+          <span class="label">Home</span>
+        </button>
+
+        <button class="nav-btn" id="profileBtn">
+          <img src="profile.jpeg" alt="profile" class="icon" />
+          <span class="label">Profile</span>
+        </button>
+
+        <button class="nav-btn" id="dashboardBtn">
+          <img src="dashboard.jpeg" alt="dashboard" class="icon" />
+          <span class="label">Dashboard</span>
+        </button>
+
+        <button class="nav-btn" id="createPostBtn">
+          <img src="createpost.jpeg" alt="create" class="icon" />
+          <span class="label">Create Post</span>
+        </button>
+
+        <button class="nav-btn">
+          <img src="messages.jpeg" alt="messages" class="icon" />
+          <span class="label">Messages</span>
+        </button>
+
+        <button class="nav-btn">
+          <img src="connect.jpeg" alt="connect" class="icon" />
+          <span class="label">Connect</span>
+        </button>
+
+        <button class="nav-btn">
+          <img src="favourites.jpeg" alt="fav" class="icon" />
+          <span class="label">Favourites</span>
+        </button>
+
+        <button class="nav-btn">
+          <img src="notifications.jpeg" alt="noti" class="icon" />
+          <span class="label">Notifications</span>
+        </button>
+      </nav>
+
+      <!-- spacer pushes remaining content up; logout removed -->
+      <div class="sidebar-spacer"></div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+      <div class="main-inner"> <!-- centers feed content -->
+        <header class="topbar">
+          <div class="username">@username • vibing</div>
+          <button class="logout-top" id="logoutTop">Log Out</button>
+        </header>
+
+        <section class="compose">
+          <div class="compose-header">What's on your mind?</div>
+          <!-- clicking the textarea sends user to post.html -->
+          <textarea id="composeBox" placeholder="Share something interesting..." readonly></textarea>
+          <!-- removed Post button as requested -->
+        </section>
+
+        <section class="feed" id="feed">
+          <!-- Post card template (will be cloned or replaced by loadFeed()) -->
+          <article class="post-card template" hidden>
+            <div class="post-head">
+              <div class="avatar">AR</div>
+              <div class="meta">
+                <div class="author">Alex Rivera</div>
+                <div class="time">2 hours ago</div>
+              </div>
+
+              <div class="follow">+ Follow</div>
+
+              <div class="post-menu">
+                <button class="menu-btn" aria-label="post menu">⋯</button>
+                <div class="menu-dropdown" hidden>
+                  <button class="menu-item" data-action="repost">Repost</button>
+                  <button class="menu-item" data-action="not-interested">Not Interested</button>
+                  <button class="menu-item" data-action="fav">Add to Favourites</button>
+                  <button class="menu-item" data-action="share">Share Options</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- media carousel: data-media is an array of URLs set by backend or client JS -->
+            <div class="media-carousel" tabindex="0" data-media='[]'>
+              <div class="slides"></div>
+              <div class="dots" aria-hidden="true"></div>
+            </div>
+
+            <div class="post-body">
+              <p class="post-text"></p>
+            </div>
+
+            <!-- Reaction bar (Like / Comment / Share) -->
+            <div class="reaction-bar">
+              <button class="reaction-btn like-btn" title="Like">❤️ <span class="count-like">0</span></button>
+              <button class="reaction-btn comment-btn" title="Comment">💬 <span class="count-comment">0</span></button>
+              <button class="reaction-btn share-btn" title="Share">↗️</button>
+            </div>
+          </article>
+          <!-- feed is populated dynamically using feed.js -->
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="test_feed.js"></script>
+</body>
+</html>
