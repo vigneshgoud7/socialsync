@@ -1,11 +1,13 @@
 <!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Social Sync — Feed</title>
   <link rel="stylesheet" href="test_feed.css" />
 </head>
+
 <body>
   <div class="app">
     <!-- SIDEBAR (logout removed here on purpose) -->
@@ -17,42 +19,37 @@
 
       <nav class="nav" role="navigation" aria-label="Main">
         <button class="nav-btn active" data-target="home">
-          <img src="home.jpeg" alt="home" class="icon" />
+          <img src="/icons/home.png" alt="home" class="icon" />
           <span class="label">Home</span>
         </button>
 
         <button class="nav-btn" id="profileBtn">
-          <img src="profile.jpeg" alt="profile" class="icon" />
+          <img src="/icons/profile.png" alt="profile" class="icon" />
           <span class="label">Profile</span>
         </button>
 
         <button class="nav-btn" id="dashboardBtn">
-          <img src="dashboard.jpeg" alt="dashboard" class="icon" />
+          <img src="/icons/dashboard.png" alt="dashboard" class="icon" />
           <span class="label">Dashboard</span>
         </button>
 
         <button class="nav-btn" id="createPostBtn">
-          <img src="createpost.jpeg" alt="create" class="icon" />
+          <img src="/icons/createpost.png" alt="create" class="icon" />
           <span class="label">Create Post</span>
         </button>
 
         <button class="nav-btn">
-          <img src="messages.jpeg" alt="messages" class="icon" />
+          <img src="/icons/messages.png" alt="messages" class="icon" />
           <span class="label">Messages</span>
         </button>
 
         <button class="nav-btn">
-          <img src="connect.jpeg" alt="connect" class="icon" />
-          <span class="label">Connect</span>
-        </button>
-
-        <button class="nav-btn">
-          <img src="favourites.jpeg" alt="fav" class="icon" />
+          <img src="/icons/favourite.png" alt="fav" class="icon" />
           <span class="label">Favourites</span>
         </button>
 
         <button class="nav-btn">
-          <img src="notifications.jpeg" alt="noti" class="icon" />
+          <img src="/icons/notifications.png" alt="noti" class="icon" />
           <span class="label">Notifications</span>
         </button>
       </nav>
@@ -91,10 +88,11 @@
               <div class="post-menu">
                 <button class="menu-btn" aria-label="post menu">⋯</button>
                 <div class="menu-dropdown" hidden>
-                  <button class="menu-item" data-action="repost">Repost</button>
-                  <button class="menu-item" data-action="not-interested">Not Interested</button>
-                  <button class="menu-item" data-action="fav">Add to Favourites</button>
-                  <button class="menu-item" data-action="share">Share Options</button>
+                  <button class="menu-item" data-action="repost">🔁 Repost</button>
+                  <button class="menu-item" data-action="not-interested">🚫 Not Interested</button>
+                  <button class="menu-item" data-action="fav">⭐ Add to Favourites</button>
+                  <button class="menu-item" data-action="share">📤 Share Options</button>
+                  <button class="menu-item" data-action="edit">✏️ Edit Post</button>
                 </div>
               </div>
             </div>
@@ -109,11 +107,14 @@
               <p class="post-text"></p>
             </div>
 
-            <!-- Reaction bar (Like / Comment / Share) -->
+            <!-- Reaction bar (Like / Comment / Repost / Share) -->
             <div class="reaction-bar">
-              <button class="reaction-btn like-btn" title="Like">❤️ <span class="count-like">0</span></button>
-              <button class="reaction-btn comment-btn" title="Comment">💬 <span class="count-comment">0</span></button>
-              <button class="reaction-btn share-btn" title="Share">↗️</button>
+              <button class="reaction-btn like-btn" title="Like">❤️ <span>Like</span> <span
+                  class="count-like">0</span></button>
+              <button class="reaction-btn comment-btn" title="Comment">💬 <span>Comment</span> <span
+                  class="count-comment">0</span></button>
+              <button class="reaction-btn repost-btn" title="Repost">🔁 <span>Repost</span></button>
+              <button class="reaction-btn share-btn" title="Share">↗️<span>Share</span></button>
             </div>
           </article>
           <!-- feed is populated dynamically using feed.js -->
@@ -122,6 +123,26 @@
     </main>
   </div>
 
+  <!-- MODAL -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Title</div>
+        <button class="modal-close" id="modalClose">×</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Dynamic Content -->
+      </div>
+      <div class="modal-footer" id="modalFooter" hidden>
+        <div class="comment-input-wrap">
+          <input type="text" class="comment-input" id="commentInput" placeholder="Write a comment..." />
+          <button class="send-btn" id="sendCommentBtn">Post</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="test_feed.js"></script>
 </body>
+
 </html>
