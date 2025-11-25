@@ -313,12 +313,18 @@ otp_store = {}  # TEMP STORAGE FOR OTP
 # MODELS
 # ============================================================
 class SignupRequest(BaseModel):
+    username: str
     identifier: str
     password: str
 
 class LoginRequest(BaseModel):
     identifier: str
     password: str
+
+class LoginResponse(BaseModel):
+    access_token: str
+    token_type: str
+    username: str
 
 class Token(BaseModel):
     access_token: str
@@ -374,23 +380,36 @@ async def signup(data: SignupRequest):
     existing = await db.users.find_one({"identifier": data.identifier})
     if existing:
         raise HTTPException(status_code=400, detail="You already have an account. Please login.")
+    
+    # Check username uniqueness
+    existing_user = await db.users.find_one({"username": data.username})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Username already taken.")
+
     hashed = hash_password(data.password)
     await db.users.insert_one({
+        "username": data.username,
         "identifier": data.identifier,
         "password": hashed,
         "created_at": datetime.utcnow()
     })
     return {"message": "User created successfully"}
 
-@app.post("/login", response_model=Token)
+@app.post("/login", response_model=LoginResponse)
 async def login(data: LoginRequest):
     user = await db.users.find_one({"identifier": data.identifier})
     if not user:
         raise HTTPException(status_code=404, detail="Account does not exist")
     if not verify_password(data.password, user["password"]):
         raise HTTPException(status_code=401, detail="Incorrect password")
-    token = create_access_token({"sub": user["identifier"]})
-    return {"access_token": token, "token_type": "bearer"}
+    
+    token = create_access_token({"sub": user["identifier"], "username": user.get("username", "User")})
+    
+    return {
+        "access_token": token, 
+        "token_type": "bearer",
+        "username": user.get("username", "User")
+    }
 
 @app.post("/forgot-password")
 async def forgot_password(data: ForgotPasswordRequest):
@@ -444,6 +463,24 @@ async def test_db():
 @app.get("/")
 def home():
     return {"message": "API is running"}
+
+# ============================================================
+# GET: Fetch all posts for FEED
+# ============================================================
+
+@app.get("/posts")
+async def get_all_posts():
+    """
+    Returns all posts sorted by newest first.
+    """
+    posts_cursor = db.posts.find().sort("created_at", -1)
+    posts = []
+
+    async for p in posts_cursor:
+        p["_id"] = str(p["_id"])  # convert ObjectId → string
+        posts.append(p)
+
+    return posts
 
 # ============================================================
 # NEW: Create Post Endpoint
@@ -519,3 +556,181 @@ async def create_post(
         print("Error in create_post:", e)
         raise HTTPException(status_code=500, detail="Internal server error while creating post")
 
+
+# ============================================================
+# GET: Fetch single post by ID
+# ============================================================
+from bson import ObjectId
+
+@app.get("/posts/{post_id}")
+async def get_post(post_id: str):
+    try:
+        post = await db.posts.find_one({"_id": ObjectId(post_id)})
+        if not post:
+            raise HTTPException(status_code=404, detail="Post not found")
+        post["_id"] = str(post["_id"])
+        return post
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid Post ID")
+
+# ============================================================
+# PUT: Update Post
+# ============================================================
+@app.put("/posts/{post_id}")
+async def update_post(
+    post_id: str,
+    media: List[UploadFile] = File(None),  # Optional for update
+    caption: str = Form(""),
+    description: str = Form(""),
+    tags: str = Form(""),
+    feeling: str = Form(""),
+    location: str = Form(""),
+    music: str = Form("")
+):
+    try:
+        # Check if post exists
+        existing_post = await db.posts.find_one({"_id": ObjectId(post_id)})
+        if not existing_post:
+            raise HTTPException(status_code=404, detail="Post not found")
+
+        update_data = {
+            "caption": caption,
+            "description": description,
+            "tags": [t.strip() for t in tags.split(",") if t.strip()],
+            "feeling": feeling,
+            "location": location,
+            "music": music,
+            "updated_at": datetime.utcnow()
+        }
+
+        # Handle Media Update
+        # If new media is provided, replace the old ones.
+        # If not provided, keep existing.
+        if media and len(media) > 0:
+            # 1. Delete old files (optional, good for cleanup)
+            old_media = existing_post.get("media", [])
+            for m in old_media:
+                try:
+                    os.remove(os.path.join(UPLOAD_DIR, m["saved_as"]))
+                except:
+                    pass
+            
+            # 2. Save new files
+            saved_files = []
+            for up in media:
+                ext = os.path.splitext(up.filename)[1] or ""
+                unique_name = f"{uuid.uuid4().hex}{ext}"
+                dest_path = os.path.join(UPLOAD_DIR, unique_name)
+
+                async with aiofiles.open(dest_path, "wb") as out_file:
+                    content = await up.read()
+                    await out_file.write(content)
+
+                file_url = f"/uploads/{unique_name}"
+                saved_files.append({
+                    "filename": up.filename,
+                    "saved_as": unique_name,
+                    "url": file_url,
+                    "content_type": up.content_type
+                })
+            
+            update_data["media"] = saved_files
+
+        await db.posts.update_one(
+            {"_id": ObjectId(post_id)},
+            {"$set": update_data}
+        )
+
+        return {"message": "Post updated successfully"}
+
+    except Exception as e:
+        print("Error updating post:", e)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+# ============================================================
+# INTERACTIONS: LIKES & COMMENTS
+# ============================================================
+
+class LikeRequest(BaseModel):
+    username: str
+
+class CommentRequest(BaseModel):
+    username: str
+    text: str
+
+# --- LIKE ENDPOINTS ---
+
+@app.post("/posts/{post_id}/like")
+async def toggle_like(post_id: str, req: LikeRequest):
+    try:
+        post = await db.posts.find_one({"_id": ObjectId(post_id)})
+        if not post:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        current_likes = post.get("likes", [])
+        
+        if req.username in current_likes:
+            # Unlike
+            await db.posts.update_one(
+                {"_id": ObjectId(post_id)},
+                {"$pull": {"likes": req.username}}
+            )
+            return {"message": "Unliked", "liked": False}
+        else:
+            # Like
+            await db.posts.update_one(
+                {"_id": ObjectId(post_id)},
+                {"$addToSet": {"likes": req.username}}
+            )
+            return {"message": "Liked", "liked": True}
+
+    except Exception as e:
+        print("Error toggling like:", e)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.get("/posts/{post_id}/likes")
+async def get_likes(post_id: str):
+    try:
+        post = await db.posts.find_one({"_id": ObjectId(post_id)})
+        if not post:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        likes = post.get("likes", [])
+        # Return list of objects for frontend consistency
+        return [{"username": u} for u in likes]
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid Post ID")
+
+# --- COMMENT ENDPOINTS ---
+
+@app.post("/posts/{post_id}/comment")
+async def add_comment(post_id: str, req: CommentRequest):
+    try:
+        comment = {
+            "username": req.username,
+            "text": req.text,
+            "created_at": datetime.utcnow()
+        }
+        
+        await db.posts.update_one(
+            {"_id": ObjectId(post_id)},
+            {"$push": {"comments": comment}}
+        )
+        
+        return {"message": "Comment added", "comment": comment}
+    except Exception as e:
+        print("Error adding comment:", e)
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+@app.get("/posts/{post_id}/comments")
+async def get_comments(post_id: str):
+    try:
+        post = await db.posts.find_one({"_id": ObjectId(post_id)})
+        if not post:
+            raise HTTPException(status_code=404, detail="Post not found")
+        
+        comments = post.get("comments", [])
+        return comments
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid Post ID")

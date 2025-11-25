@@ -1,6 +1,7 @@
 document.getElementById("signupForm").addEventListener("submit", async function (event) {
     event.preventDefault();
 
+    const username = document.getElementById("signupUsername").value;
     const identifier = document.getElementById("signupIdentifier").value;
     const password = document.getElementById("signupPassword").value;
     const errorMsg = document.getElementById("signup-error");
@@ -8,8 +9,8 @@ document.getElementById("signupForm").addEventListener("submit", async function 
     try {
         const response = await fetch("http://127.0.0.1:8000/signup", {
             method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify({ identifier, password })
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, identifier, password })
         });
 
         const data = await response.json();

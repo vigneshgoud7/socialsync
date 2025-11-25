@@ -104,7 +104,7 @@
   <div class="card">
     <div class="title-row">
       <h4>Create New Post</h4>
-      <button class="upload-btn" id="submitPost">Upload</button>
+      <button type="button" class="upload-btn" id="submitPost">Upload</button>
     </div>
 
     <!-- NEW Upload Area -->
@@ -175,11 +175,100 @@
   </div>
 
   <script>
-    document.getElementById('submitPost').addEventListener('click', async ()=>{
 
+const uploadArea = document.getElementById("uploadArea");
+const fileInput = document.getElementById("fileInput");
+const previews = document.getElementById("previews");
+const submitBtn = document.getElementById('submitPost');
+const titleText = document.querySelector('.title-row h4');
+
+// Check for Edit Mode
+const urlParams = new URLSearchParams(window.location.search);
+const postId = urlParams.get('id');
+let isEditMode = !!postId;
+
+if (isEditMode) {
+    titleText.textContent = "Edit Post";
+    submitBtn.textContent = "Update";
+    loadPostData(postId);
+}
+
+async function loadPostData(id) {
+    try {
+        const res = await fetch(`http://localhost:8000/posts/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch post");
+        const post = await res.json();
+
+        document.getElementById('caption').value = post.caption || "";
+        document.getElementById('description').value = post.description || "";
+        document.getElementById('tags').value = (post.tags || []).join(", ");
+        
+        if (post.feeling) {
+            document.getElementById('feelingSelect').textContent = post.feeling;
+        }
+        document.getElementById('locationInput').value = post.location || "";
+        if (post.music) {
+            document.getElementById('musicSelect').textContent = post.music;
+        }
+
+        // Show existing media previews (optional, but good UX)
+        // Note: File input cannot be programmatically set, so we just show what's there.
+        // If user uploads new files, we replace.
+        if (post.media && post.media.length > 0) {
+             previews.innerHTML = "";
+             post.media.forEach(m => {
+                const thumb = document.createElement("div");
+                thumb.className = "thumb";
+                if (m.content_type.startsWith("video")) {
+                    thumb.innerHTML = `<video src="${m.url}" autoplay muted loop></video>`;
+                } else {
+                    thumb.innerHTML = `<img src="${m.url}">`;
+                }
+                previews.appendChild(thumb);
+             });
+             // Add a note that uploading new files will replace these
+             const note = document.createElement("div");
+             note.style.width = "100%";
+             note.style.fontSize = "12px";
+             note.style.color = "#888";
+             note.style.marginTop = "5px";
+             note.textContent = "* Uploading new media will replace existing media.";
+             previews.appendChild(note);
+        }
+
+    } catch (e) {
+        console.error(e);
+        alert("Error loading post data");
+    }
+}
+
+// OPEN FILE PICKER
+uploadArea.addEventListener("click", () => {
+    fileInput.click();
+});
+
+// SHOW PREVIEWS
+fileInput.addEventListener("change", () => {
+    previews.innerHTML = "";
+    [...fileInput.files].forEach(file => {
+        const url = URL.createObjectURL(file);
+        const thumb = document.createElement("div");
+        thumb.className = "thumb";
+        thumb.innerHTML = file.type.startsWith("video")
+            ? `<video src="${url}" autoplay muted loop></video>`
+            : `<img src="${url}">`;
+        previews.appendChild(thumb);
+    });
+});
+
+
+// UPLOAD / UPDATE TO BACKEND
+submitBtn.addEventListener('click', async (event)=>{
+  event.preventDefault();
   const formData = new FormData();
 
-  if (fileInput.files.length === 0) {
+  // In create mode, media is required. In edit mode, it's optional.
+  if (!isEditMode && fileInput.files.length === 0) {
       alert("Please select at least one media file.");
       return;
   }
@@ -193,25 +282,112 @@
   formData.append('location', document.getElementById('locationInput').value || "");
   formData.append('music', document.getElementById('musicSelect').textContent || "");
 
+  const url = isEditMode 
+    ? `http://localhost:8000/posts/${postId}`
+    : "http://localhost:8000/create-post";
+  
+  const method = isEditMode ? "PUT" : "POST";
+
   try {
-      const res = await fetch("http://localhost:8000/create-post", {
-          method: "POST",
+      const res = await fetch(url, {
+          method: method,
           body: formData
       });
 
       if (res.ok) {
-          alert("Post Successful");
+          // CUSTOM ALERT + REDIRECT
+          showSuccessAlert(isEditMode ? "Post Updated Successfully!" : "Upload Successful!");
+          setTimeout(() => {
+              window.location.href = "test_feed.html";
+          }, 3000);
       } else {
           const err = await res.json();
-          alert("Upload Failed: " + err.detail);
+          alert("Action Failed: " + err.detail);
       }
 
   } catch (err) {
-      alert("Nsetwork error: Could not reach server");
+      alert("Network error: Could not reach server");
       console.error(err);
   }
 });
 
-  </script>
+function showSuccessAlert(msg) {
+    // Create a simple overlay
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.5)';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.zIndex = '9999';
+
+    const box = document.createElement('div');
+    box.style.background = 'white';
+    box.style.padding = '30px 50px';
+    box.style.borderRadius = '16px';
+    box.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
+    box.style.textAlign = 'center';
+    box.style.fontSize = '18px';
+    box.style.fontWeight = '600';
+    box.style.color = '#333';
+    
+    box.textContent = msg;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+}
+
+// FEELING DROPDOWN
+const feelingSelect = document.getElementById("feelingSelect");
+const feelingList = document.getElementById("feelingList");
+
+feelingSelect.addEventListener("click", () => {
+    feelingList.style.display = feelingList.style.display === "block" ? "none" : "block";
+});
+
+// click an item
+feelingList.querySelectorAll(".item").forEach(item => {
+    item.addEventListener("click", () => {
+        feelingSelect.textContent = item.textContent;
+        feelingList.style.display = "none";
+    });
+});
+
+// LOCATION + TAG input already fine (no dropdown)
+
+// MUSIC DROPDOWN
+const musicSelect = document.getElementById("musicSelect");
+const musicList = document.getElementById("musicList");
+
+musicSelect.addEventListener("click", () => {
+    musicList.style.display = musicList.style.display === "block" ? "none" : "block";
+});
+
+// click item
+musicList.querySelectorAll(".item").forEach(item => {
+    item.addEventListener("click", () => {
+        musicSelect.textContent = item.textContent;
+        musicList.style.display = "none";
+    });
+});
+
+
+// CLOSE DROPDOWNS WHEN CLICKING OUTSIDE
+document.addEventListener("click", (e) => {
+    if (!feelingSelect.contains(e.target) && !feelingList.contains(e.target)) {
+        feelingList.style.display = "none";
+    }
+    if (!musicSelect.contains(e.target) && !musicList.contains(e.target)) {
+        musicList.style.display = "none";
+    }
+});
+
+
+</script>
+
 </body>
 </html>
