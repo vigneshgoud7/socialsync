@@ -1,0 +1,393 @@
+<!-- FULL REBUILT VERSION WITH:  
+✓ Previous full design (dropdowns, icons, styling) retained exactly  
+✓ New simplified Upload Media area (NO dotted borders)  
+✓ New top-right Upload button kept  
+-->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Create Post — SocialSync</title>
+  <style>
+    :root{
+      --card-width:720px;
+      --accent: linear-gradient(90deg,#a14bff,#ff57a8);
+      --muted:#f2f2f4;
+      --input-bg:#f5f6f7;
+      --border:#e9e6ee;
+      --radius:14px;
+      font-family: Inter, 'Segoe UI', Roboto;
+    }
+    html,body{height:100%;margin:0;}
+    body{
+      background: radial-gradient(circle at 10% 10%, #fff7fb 0%, #fff3f8 30%, #f7f2fb 100%);
+      display:flex;align-items:center;justify-content:center;padding:40px 20px;
+    }
+    .card{
+      width:var(--card-width);
+      background:white;border-radius:20px;
+      padding:28px 36px 44px;
+      box-shadow:0 10px 30px rgba(18,10,33,0.06);
+      box-sizing:border-box;
+      position:relative;
+    }
+
+    .title-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    .upload-btn{
+      background:var(--accent);color:white;padding:10px 18px;border-radius:16px;border:none;
+      font-weight:600;cursor:pointer;font-size:13px;
+      box-shadow:0 6px 18px rgba(161,75,255,0.22);
+    }
+
+    /* NEW simplified upload area (NO DOTTED BORDER). */
+    .upload-area{
+      background:#faf7fc;
+      padding:40px 20px;
+      border-radius:14px;
+      text-align:center;
+      cursor:pointer;
+      margin-bottom:26px;
+    }
+    .upload-area img{
+      width:42px;margin-bottom:10px;opacity:.9;
+    }
+    .upload-area p{margin:0;font-size:14px;font-weight:600;color:#5e4d63}
+    .upload-area .sub{font-size:12px;color:#a09aa6;margin-top:6px}
+
+    .previews{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .thumb{width:86px;height:86px;background:#eee;border-radius:8px;overflow:hidden;border:1px solid #f0edf2}
+    .thumb img, .thumb video{width:100%;height:100%;object-fit:cover}
+
+    /* Inputs */
+    .field{margin-bottom:20px}
+    .label{font-size:13px;color:#5b5160;margin-bottom:8px}
+    .textarea, .input, .select{
+      width:100%;background:var(--input-bg);border:1px solid #eee;
+      padding:12px;border-radius:10px;font-size:13px;color:#333
+    }
+    .textarea{min-height:80px;resize:vertical}
+
+    /* Icon row */
+    .row-icon{display:flex;gap:12px;align-items:center}
+    .icon-sm{width:18px;height:18px;display:flex}
+
+    /* Dropdowns */
+    .select-wrap{position:relative}
+    .select{cursor:pointer;padding-right:36px}
+    .select-wrap::after{
+      content:'▾';position:absolute;right:12px;top:50%;transform:translateY(-50%);color:#8b7e93;
+    }
+    .dropdown-list{
+      display:none;
+      position:absolute;
+      left:0;
+      width:100%; /* PERFECT FULL WIDTH OF THE INPUT */
+      max-width:100%; /* ENSURES IT NEVER EXCEEDS WHITE CARD */
+      top:48px;
+      background:white;
+      border:1px solid #eee;
+      border-radius:8px;
+      max-height:200px;
+      overflow:auto;
+      z-index:20;
+      box-shadow:0 4px 12px rgba(18,10,33,0.06);
+    }
+    .dropdown-list .item{
+      padding:10px 14px;cursor:pointer;display:flex;gap:10px;border-bottom:1px solid rgba(0,0,0,0.04);
+    }
+    .dropdown-list .item:hover{background:#f7f5fb}
+
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="title-row">
+      <h4>Create New Post</h4>
+      <button type="button" class="upload-btn" id="submitPost">Upload</button>
+    </div>
+
+    <!-- NEW Upload Area -->
+    <div class="upload-area" id="uploadArea">
+      <img src="/mnt/data/b5a9b07a-cf4d-4688-82d7-4a81520cf3ff.png" />
+      <p>Select media to upload</p>
+      <div class="sub">You can upload multiple photos or videos</div>
+      <div id="previews" class="previews"></div>
+    </div>
+    <input id="fileInput" type="file" accept="image/*,video/*" multiple style="display:none" />
+
+    <!-- ALL OTHER FIELDS RETAINED EXACTLY -->
+
+    <div class="field">
+      <div class="label">Add Caption</div>
+      <textarea class="textarea" id="caption" placeholder="Write a caption..."></textarea>
+    </div>
+
+    <div class="field">
+      <div class="label">Add Description</div>
+      <textarea class="textarea" id="description" placeholder="Add a description..."></textarea>
+    </div>
+
+    <div class="field">
+      <div class="label">Tag People</div>
+      <div class="row-icon">
+        <div class="icon-sm"><img src="/mnt/data/9aee2fff-1e1e-458a-87f6-3549921c774c.png" /></div>
+        <input class="input" id="tags" placeholder="Tag people..." />
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="label">Add a Feeling</div>
+      <div class="select-wrap">
+        <div id="feelingSelect" class="select">How are you feeling?</div>
+        <div class="dropdown-list" id="feelingList">
+          <div class="item">😊 Happy</div>
+          <div class="item">😢 Sad</div>
+          <div class="item">😎 Cool</div>
+          <div class="item">🤩 Excited</div>
+          <div class="item">😡 Angry</div>
+          <div class="item">😍 Loved</div>
+          <div class="item">🙏 Blessed</div>
+          <div class="item">💖 Grateful</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="label">Add Location</div>
+      <div class="row-icon">
+        <div class="icon-sm"><img src="/mnt/data/73876d91-c8a9-4c8c-8a89-f407a761cf88.png" /></div>
+        <input class="input" id="locationInput" placeholder="Add location..." />
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="label">Add Music</div>
+      <div class="select-wrap">
+        <div id="musicSelect" class="select">Add background music...</div>
+        <div class="dropdown-list" id="musicList">
+          <div class="item">Song 1</div>
+          <div class="item">Song 2</div>
+          <div class="item">Song 3</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+
+const uploadArea = document.getElementById("uploadArea");
+const fileInput = document.getElementById("fileInput");
+const previews = document.getElementById("previews");
+const submitBtn = document.getElementById('submitPost');
+const titleText = document.querySelector('.title-row h4');
+
+// Check for Edit Mode
+const urlParams = new URLSearchParams(window.location.search);
+const postId = urlParams.get('id');
+let isEditMode = !!postId;
+
+if (isEditMode) {
+    titleText.textContent = "Edit Post";
+    submitBtn.textContent = "Update";
+    loadPostData(postId);
+}
+
+async function loadPostData(id) {
+    try {
+        const res = await fetch(`http://localhost:8000/posts/${id}`);
+        if (!res.ok) throw new Error("Failed to fetch post");
+        const post = await res.json();
+
+        document.getElementById('caption').value = post.caption || "";
+        document.getElementById('description').value = post.description || "";
+        document.getElementById('tags').value = (post.tags || []).join(", ");
+        
+        if (post.feeling) {
+            document.getElementById('feelingSelect').textContent = post.feeling;
+        }
+        document.getElementById('locationInput').value = post.location || "";
+        if (post.music) {
+            document.getElementById('musicSelect').textContent = post.music;
+        }
+
+        // Show existing media previews (optional, but good UX)
+        // Note: File input cannot be programmatically set, so we just show what's there.
+        // If user uploads new files, we replace.
+        if (post.media && post.media.length > 0) {
+             previews.innerHTML = "";
+             post.media.forEach(m => {
+                const thumb = document.createElement("div");
+                thumb.className = "thumb";
+                if (m.content_type.startsWith("video")) {
+                    thumb.innerHTML = `<video src="${m.url}" autoplay muted loop></video>`;
+                } else {
+                    thumb.innerHTML = `<img src="${m.url}">`;
+                }
+                previews.appendChild(thumb);
+             });
+             // Add a note that uploading new files will replace these
+             const note = document.createElement("div");
+             note.style.width = "100%";
+             note.style.fontSize = "12px";
+             note.style.color = "#888";
+             note.style.marginTop = "5px";
+             note.textContent = "* Uploading new media will replace existing media.";
+             previews.appendChild(note);
+        }
+
+    } catch (e) {
+        console.error(e);
+        alert("Error loading post data");
+    }
+}
+
+// OPEN FILE PICKER
+uploadArea.addEventListener("click", () => {
+    fileInput.click();
+});
+
+// SHOW PREVIEWS
+fileInput.addEventListener("change", () => {
+    previews.innerHTML = "";
+    [...fileInput.files].forEach(file => {
+        const url = URL.createObjectURL(file);
+        const thumb = document.createElement("div");
+        thumb.className = "thumb";
+        thumb.innerHTML = file.type.startsWith("video")
+            ? `<video src="${url}" autoplay muted loop></video>`
+            : `<img src="${url}">`;
+        previews.appendChild(thumb);
+    });
+});
+
+
+// UPLOAD / UPDATE TO BACKEND
+submitBtn.addEventListener('click', async (event)=>{
+  event.preventDefault();
+  const formData = new FormData();
+
+  // In create mode, media is required. In edit mode, it's optional.
+  if (!isEditMode && fileInput.files.length === 0) {
+      alert("Please select at least one media file.");
+      return;
+  }
+
+  [...fileInput.files].forEach(f => formData.append('media', f));
+
+  formData.append('caption', document.getElementById('caption').value || "");
+  formData.append('description', document.getElementById('description').value || "");
+  formData.append('tags', document.getElementById('tags').value || "");
+  formData.append('feeling', document.getElementById('feelingSelect').textContent || "");
+  formData.append('location', document.getElementById('locationInput').value || "");
+  formData.append('music', document.getElementById('musicSelect').textContent || "");
+
+  const url = isEditMode 
+    ? `http://localhost:8000/posts/${postId}`
+    : "http://localhost:8000/create-post";
+  
+  const method = isEditMode ? "PUT" : "POST";
+
+  try {
+      const res = await fetch(url, {
+          method: method,
+          body: formData
+      });
+
+      if (res.ok) {
+          // CUSTOM ALERT + REDIRECT
+          showSuccessAlert(isEditMode ? "Post Updated Successfully!" : "Upload Successful!");
+          setTimeout(() => {
+              window.location.href = "test_feed.html";
+          }, 3000);
+      } else {
+          const err = await res.json();
+          alert("Action Failed: " + err.detail);
+      }
+
+  } catch (err) {
+      alert("Network error: Could not reach server");
+      console.error(err);
+  }
+});
+
+function showSuccessAlert(msg) {
+    // Create a simple overlay
+    const overlay = document.createElement('div');
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'rgba(0,0,0,0.5)';
+    overlay.style.display = 'flex';
+    overlay.style.alignItems = 'center';
+    overlay.style.justifyContent = 'center';
+    overlay.style.zIndex = '9999';
+
+    const box = document.createElement('div');
+    box.style.background = 'white';
+    box.style.padding = '30px 50px';
+    box.style.borderRadius = '16px';
+    box.style.boxShadow = '0 10px 30px rgba(0,0,0,0.2)';
+    box.style.textAlign = 'center';
+    box.style.fontSize = '18px';
+    box.style.fontWeight = '600';
+    box.style.color = '#333';
+    
+    box.textContent = msg;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+}
+
+// FEELING DROPDOWN
+const feelingSelect = document.getElementById("feelingSelect");
+const feelingList = document.getElementById("feelingList");
+
+feelingSelect.addEventListener("click", () => {
+    feelingList.style.display = feelingList.style.display === "block" ? "none" : "block";
+});
+
+// click an item
+feelingList.querySelectorAll(".item").forEach(item => {
+    item.addEventListener("click", () => {
+        feelingSelect.textContent = item.textContent;
+        feelingList.style.display = "none";
+    });
+});
+
+// LOCATION + TAG input already fine (no dropdown)
+
+// MUSIC DROPDOWN
+const musicSelect = document.getElementById("musicSelect");
+const musicList = document.getElementById("musicList");
+
+musicSelect.addEventListener("click", () => {
+    musicList.style.display = musicList.style.display === "block" ? "none" : "block";
+});
+
+// click item
+musicList.querySelectorAll(".item").forEach(item => {
+    item.addEventListener("click", () => {
+        musicSelect.textContent = item.textContent;
+        musicList.style.display = "none";
+    });
+});
+
+
+// CLOSE DROPDOWNS WHEN CLICKING OUTSIDE
+document.addEventListener("click", (e) => {
+    if (!feelingSelect.contains(e.target) && !feelingList.contains(e.target)) {
+        feelingList.style.display = "none";
+    }
+    if (!musicSelect.contains(e.target) && !musicList.contains(e.target)) {
+        musicList.style.display = "none";
+    }
+});
+
+
+</script>
+
+</body>
+</html>
